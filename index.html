@@ -30,7 +30,7 @@
                 debug.innerText = "Listo para recibir ataques.";
 
                 // FORMA CORRECTA DE ESCUCHAR MENSAJES EN V4
-                channel.listen('message', (msg) => {
+                channel.listen('vibrate-event', (msg) => {
                     console.log("Mensaje recibido:", msg);
                     let data = msg.data;
                     if (typeof data === 'string') data = JSON.parse(data);
