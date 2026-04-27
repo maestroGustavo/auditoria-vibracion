@@ -1,38 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Atacante</title>
+    <meta charset="UTF-8">
+    <title>Consola de Mando Atacante</title>
     <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
-<body style="text-align:center; padding-top:50px; background:#2c3e50; color:white;">
-    <h1>CONSOLA DE MANDO</h1>
-    <button id="attack" style="padding:30px; font-size:2em; background:red; color:white; border:none;">
+<body style="text-align:center; padding-top:50px; background:#2c3e50; color:white; font-family:sans-serif;">
+    <h1>PANEL DE CONTROL</h1>
+    <p>Estado de conexión: <span id="st">Conectando...</span></p>
+    <button id="attack" style="padding:30px; font-size:1.5em; background:red; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">
         EJECUTAR VIBRACIÓN
     </button>
 
-   <script>
-    try {
-        // Detectamos la forma correcta de llamar a la librería
-        const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
-        
-        const pieSocket = new PieSocketClass({
-            clusterId: 'free.blr2',
-            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
-        });
+    <script>
+        const st = document.getElementById('st');
+        try {
+            const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
 
-        const channel = pieSocket.subscribe('clase-vibracion-2026');
+            const pieSocket = new PieSocketClass({
+                clusterId: 'free.blr2',
+                apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
+            });
 
-        channel.on('open', () => {
-            console.log("Conexión establecida");
-        });
+            const channel = pieSocket.subscribe('clase-vibracion-2026');
 
-        document.getElementById('attack').onclick = () => {
-            channel.publish({ action: 'vibrate' });
-            alert("¡Señal de vibración enviada!");
-        };
-    } catch (err) {
-        alert("Error técnico: " + err.message);
-    }
-</script>
+            channel.on('open', () => {
+                st.innerText = "LISTO PARA EL ATAQUE";
+                st.style.color = "#00ff00";
+            });
+
+            document.getElementById('attack').onclick = () => {
+                channel.publish({
+                    action: 'vibrate'
+                });
+                console.log("Señal enviada.");
+            };
+        } catch (err) {
+            alert("Error: " + err.message);
+        }
+    </script>
 </body>
 </html>
