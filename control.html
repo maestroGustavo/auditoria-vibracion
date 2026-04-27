@@ -2,38 +2,40 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Consola de Mando Atacante</title>
+    <title>Consola Atacante</title>
     <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
 <body style="text-align:center; padding-top:50px; background:#2c3e50; color:white; font-family:sans-serif;">
     <h1>PANEL DE CONTROL</h1>
-    <p>Estado de conexión: <span id="st">Conectando...</span></p>
-    <button id="attack" style="padding:30px; font-size:1.5em; background:red; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">
+    <p>Estado: <span id="st">Conectando...</span></p>
+    <button id="attack" style="padding:30px; font-size:1.5em; background:red; color:white; border:none; border-radius:10px; cursor:pointer;">
         EJECUTAR VIBRACIÓN
     </button>
 
     <script>
         const st = document.getElementById('st');
+        let globalChannel;
+
         try {
             const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
-
             const pieSocket = new PieSocketClass({
                 clusterId: 'free.blr2',
                 apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
             });
 
-            const channel = pieSocket.subscribe('clase-vibracion-2026');
-
-            channel.on('open', () => {
+            pieSocket.subscribe('clase-vibracion-2026').then(channel => {
+                globalChannel = channel;
                 st.innerText = "LISTO PARA EL ATAQUE";
                 st.style.color = "#00ff00";
             });
 
             document.getElementById('attack').onclick = () => {
-                channel.publish({
-                    action: 'vibrate'
-                });
-                console.log("Señal enviada.");
+                if (globalChannel) {
+                    globalChannel.publish('message', { action: 'vibrate' });
+                    alert("Ataque enviado");
+                } else {
+                    alert("Aún no hay conexión con el servidor");
+                }
             };
         } catch (err) {
             alert("Error: " + err.message);
