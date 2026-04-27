@@ -4,56 +4,43 @@
     <title>Nodo Receptor</title>
     <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
-<body style="text-align:center; padding-top:50px; font-family:sans-serif; background-color: #f0f0f0;">
-    <h1>Estado: <span id="st" style="color:red">Iniciando...</span></h1>
-    <button id="btn" style="padding:20px; font-size:1.5em; cursor:pointer; background-color: #007bff; color: white; border: none; border-radius: 10px;">
-        1. ACTIVAR RECEPTOR
-    </button>
-    <p id="debug" style="margin-top: 20px; color: #666; font-size: 0.8em;"></p>
+<body style="text-align:center; padding-top:50px; font-family:sans-serif;">
+    <h1>Estado: <span id="st" style="color:red">Desconectado</span></h1>
+    <button id="btn" style="padding:20px; font-size:1.5em; cursor:pointer;">1. PULSA</button>
+    <p id="debug" style="color:gray;"></p>
 
     <script>
+        const st = document.getElementById('st');
         const debug = document.getElementById('debug');
-        
-        // CONFIGURACIÓN CORREGIDA
+
+        // CONFIGURACIÓN (CON COMILLAS Y TRUE EN MINÚSCULA)
         const pieSocket = new PieSocket.default({
             clusterId: 'free.blr2',
             apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A',
-            notifySelf: True // Permite que tú mismo veas tus mensajes si pruebas en el mismo cel
+            notifySelf: true
         });
 
-        // Nos suscribimos al canal
         const channel = pieSocket.subscribe('vibration-room');
 
         channel.on('open', () => {
-            document.getElementById('st').innerText = "Conectado al Servidor";
-            debug.innerText = "Canal abierto correctamente.";
+            st.innerText = "Siente";
+            st.style.color = "orange";
         });
 
         document.getElementById('btn').onclick = () => {
-            document.getElementById('st').innerText = "ESCUCHANDO...";
-            document.getElementById('st').style.color = "green";
-            // Ejecutamos una vibración de prueba para asegurar el permiso del navegador
+            st.innerText = "wait...";
+            st.style.color = "green";
             if (navigator.vibrate) {
-                navigator.vibrate(100);
-                debug.innerText = " Esperando ...";
-            } else {
-                debug.innerText = "Error: Este navegador no soporta vibración.";
+                navigator.vibrate(100); // Vibración de prueba
+                debug.innerText = "Permiso concedido.";
             }
         };
 
         channel.on('message', (msg) => {
-            debug.innerText = "¡Señal recibida!";
-            try {
-                // PieSocket a veces envía el objeto directo o como string
-                const data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
-                
-                if(data.action === 'vibrate') {
-                    if (navigator.vibrate) {
-                        navigator.vibrate([500, 200, 500]);
-                    }
-                }
-            } catch (e) {
-                debug.innerText = "Error al procesar mensaje: " + e;
+            // PieSocket v4 envía los datos en msg.data
+            const data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
+            if (data.action === 'vibrate' && navigator.vibrate) {
+                navigator.vibrate([500, 200, 500]);
             }
         });
     </script>
