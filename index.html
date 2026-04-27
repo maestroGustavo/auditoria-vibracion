@@ -1,31 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Nodo Receptor</title>
-<script src="https://unpkg.com/piesocket-js@4"></script>
+    <title>Nodo Receptor</title>
+    <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
-<body style="text-align:center; padding-top:50px; font-family:sans-serif;">
-<h1>Estado: <span id="st" style="color:red">Desconectado</span></h1>
-<button id="btn" style="padding:20px; font-size:1.5em; cursor:pointer;">1.
-PRESIONA EL BOTON</button>
-<script>
-// REEMPLAZA CON TUS DATOS DE PIESOCKET
-const pie = new PieSocket.default({
-clusterId: 'free.blr2',
-apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
-});
-const ch = pie.subscribe('vibration-room');
-document.getElementById('btn').onclick = () => {
-document.getElementById('st').innerText = "ESPERA";
-document.getElementById('st').style.color = "green";
-alert("Sistema armado. sientes eso?...");
-};
-ch.on('message', (msg) => {
-const data = JSON.parse(msg.data);
-if(data.action === 'vibrate' && navigator.vibrate) {
-navigator.vibrate([500, 200, 500]);
-}
-});
-</script>
+<body style="text-align:center; padding-top:50px; font-family:sans-serif; background-color: #f0f0f0;">
+    <h1>Estado: <span id="st" style="color:red">Iniciando...</span></h1>
+    <button id="btn" style="padding:20px; font-size:1.5em; cursor:pointer; background-color: #007bff; color: white; border: none; border-radius: 10px;">
+        1. ACTIVAR RECEPTOR
+    </button>
+    <p id="debug" style="margin-top: 20px; color: #666; font-size: 0.8em;"></p>
+
+    <script>
+        const debug = document.getElementById('debug');
+        
+        // CONFIGURACIÓN CORREGIDA
+        const pieSocket = new PieSocket.default({
+            clusterId: 'free.blr2',
+            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A',
+            notifySelf: True // Permite que tú mismo veas tus mensajes si pruebas en el mismo cel
+        });
+
+        // Nos suscribimos al canal
+        const channel = pieSocket.subscribe('vibration-room');
+
+        channel.on('open', () => {
+            document.getElementById('st').innerText = "Conectado al Servidor";
+            debug.innerText = "Canal abierto correctamente.";
+        });
+
+        document.getElementById('btn').onclick = () => {
+            document.getElementById('st').innerText = "ESCUCHANDO...";
+            document.getElementById('st').style.color = "green";
+            // Ejecutamos una vibración de prueba para asegurar el permiso del navegador
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
+                debug.innerText = " Esperando ...";
+            } else {
+                debug.innerText = "Error: Este navegador no soporta vibración.";
+            }
+        };
+
+        channel.on('message', (msg) => {
+            debug.innerText = "¡Señal recibida!";
+            try {
+                // PieSocket a veces envía el objeto directo o como string
+                const data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
+                
+                if(data.action === 'vibrate') {
+                    if (navigator.vibrate) {
+                        navigator.vibrate([500, 200, 500]);
+                    }
+                }
+            } catch (e) {
+                debug.innerText = "Error al procesar mensaje: " + e;
+            }
+        });
+    </script>
 </body>
 </html>
