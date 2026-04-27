@@ -31,7 +31,7 @@
 
             document.getElementById('attack').onclick = () => {
                 if (globalChannel) {
-                    globalChannel.publish('message', { action: 'vibrate' });
+                    globalchannel.publish('vibrate-event', { action: 'vibrate' });
                     alert("Ataque enviado");
                 } else {
                     alert("Aún no hay conexión con el servidor");
