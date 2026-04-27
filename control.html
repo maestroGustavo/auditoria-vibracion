@@ -16,9 +16,10 @@ clusterId: 'free.blr2',
 apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
 });
 const ch = pie.subscribe('vibration-room');
-document.getElementById('attack').onclick = () => {
-ch.publish('vibration-room', { action: 'vibrate' });
-console.log("Ataque enviado");
+document.getElementById('attackBtn').onclick = () => {
+    channel.publish({
+        action: 'vibrate'
+    });
 };
 </script>
 </body>
