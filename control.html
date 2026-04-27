@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Panel de Control Atacante</title>
-<script src="https://unpkg.com/piesocket-js@4"></script>
+    <title>Consola Atacante</title>
+    <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
 <body style="text-align:center; padding-top:50px; background:#2c3e50; color:white;">
-<h1>CONSOLA DE MANDO</h1>
-<button id="attack" style="padding:30px; font-size:2em; background:red;
-color:white; border:none; border-radius:10px; cursor:pointer;">
-EJECUTAR VIBRACIÓN
-</button>
-<script>
-const pie = new PieSocket.default({
-clusterId: 'free.blr2',
-apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
-});
-const ch = pie.subscribe('vibration-room');
-document.getElementById('attackBtn').onclick = () => {
-    channel.publish({
-        action: 'vibrate'
-    });
-};
-</script>
+    <h1>PANEL DE CONTROL</h1>
+    <button id="attack" style="padding:30px; font-size:2em; background:red; color:white; border:none; border-radius:10px;">
+        EJECUTAR ATAQUE
+    </button>
+
+    <script>
+        const pieSocket = new PieSocket.default({
+            clusterId: 'free.blr2',
+            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
+        });
+
+        const channel = pieSocket.subscribe('vibration-room');
+
+        document.getElementById('attack').onclick = () => {
+            // IMPORTANTE: En v4 se usa publish sobre el canal suscrito
+            channel.publish({
+                action: 'vibrate'
+            });
+            alert("Señal enviada");
+        };
+    </script>
 </body>
 </html>
