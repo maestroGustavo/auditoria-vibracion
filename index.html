@@ -8,37 +8,28 @@
     <h1>Estado: <span id="st" style="color:red">Buscando señal...</span></h1>
     <button id="btn" style="padding:20px; font-size:1.5em;">1. Pulsa </button>
 
-    <script>
-        const st = document.getElementById('st');
-        try {
-            const pieSocket = new PieSocket.default({
-                clusterId: 'free.blr2',
-                apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
-            });
+    
+       <script>
+    const st = document.getElementById('st');
+    try {
+        const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
 
-            const channel = pieSocket.subscribe('clase-vibracion-2026');
+        const pieSocket = new PieSocketClass({
+            clusterId: 'free.blr2',
+            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
+        });
 
-            channel.on('open', () => {
-                st.innerText = "CONECTADO";
-                st.style.color = "green";
-            });
+        const channel = pieSocket.subscribe('clase-vibracion-2026');
 
-            document.getElementById('btn').onclick = () => {
-                alert("Nodo activado. ...");
-            };
+        channel.on('open', () => {
+            st.innerText = "CONECTADO";
+            st.style.color = "green";
+        });
 
-            channel.on('message', (msg) => {
-                // En v4, msg.data puede venir como objeto o string
-                let data = msg.data;
-                if (typeof data === 'string') data = JSON.parse(data);
-                
-                if (data.action === 'vibrate') {
-                    if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
-                }
-            });
-        } catch (err) {
-            alert("Error de código: " + err.message);
-        }
-    </script>
+        // ... resto del código igual ...
+    } catch (err) {
+        alert("Error técnico: " + err.message);
+    }
+</script>
 </body>
 </html>
