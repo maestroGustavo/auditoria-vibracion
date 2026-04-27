@@ -8,7 +8,7 @@
 <body style="text-align:center; padding-top:50px; font-family:sans-serif; background-color:#f9f9f9;">
     <h1>Estado: <span id="st" style="color:red">Buscando señal...</span></h1>
     <button id="btn" style="padding:20px; font-size:1.2em; cursor:pointer; background:#007bff; color:white; border:none; border-radius:8px;">
-        1. ACTIVAR RECEPTOR
+        1. PULSA ESTE BOTON
     </button>
     <p id="debug" style="color:gray; margin-top:20px; font-weight:bold;"></p>
 
@@ -24,22 +24,22 @@
             });
 
             pieSocket.subscribe('clase-vibracion-2026').then(channel => {
-                st.innerText = "CONECTADO";
+                st.innerText = "ESPERA";
                 st.style.color = "green";
-                debug.innerText = "Listo para recibir ataques.";
+                debug.innerText = "lograste sentir eso?.";
 
                 // Escuchamos cualquier mensaje en el evento 'vibrate-event'
                 channel.listen('vibrate-event', (msg) => {
-                    console.log("Señal de ataque detectada");
+                    console.log("Señal detectada");
                     if (navigator.vibrate) {
                         // Patrón de vibración: 800ms vibrar, 100ms pausa, 800ms vibrar
-                        navigator.vibrate([800, 100, 800]);
-                        debug.innerText = "¡ATAQUE RECIBIDO - VIBRANDO!";
+                        navigator.vibrate([800, 100, 100]);
+                        debug.innerText = "¡UUUUUUY QUE ES ESO?!";
                         debug.style.color = "red";
                         
                         // Limpiar mensaje después de 3 segundos
                         setTimeout(() => { 
-                            debug.innerText = "Listo para recibir ataques.";
+                            debug.innerText = "Listo           .";
                             debug.style.color = "gray";
                         }, 3000);
                     }
@@ -49,7 +49,7 @@
             document.getElementById('btn').onclick = () => {
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
-                    alert("Hardware vinculado con éxito. Ahora cierra esta ventana de alerta.");
+                    alert("Hardware detectado con éxito. Ahora cierra esta ventana de alerta.");
                 } else {
                     alert("Este navegador no tiene acceso al motor de vibración.");
                 }
