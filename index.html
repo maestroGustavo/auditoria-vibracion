@@ -1,35 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Receptor</title>
+    <meta charset="UTF-8">
+    <title>Nodo Receptor - Auditoría</title>
     <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
-<body style="text-align:center; padding-top:50px; font-family:sans-serif;">
+<body style="text-align:center; padding-top:50px; font-family:sans-serif; background-color:#f9f9f9;">
     <h1>Estado: <span id="st" style="color:red">Buscando señal...</span></h1>
-    <button id="btn" style="padding:20px; font-size:1.5em;">1. Pulsa </button>
+    <button id="btn" style="padding:20px; font-size:1.2em; cursor:pointer; background:#007bff; color:white; border:none; border-radius:8px;">
+        1. ACTIVAR RECEPTOR
+    </button>
+    <p id="debug" style="color:gray; margin-top:20px;"></p>
 
-    
-       <script>
-    const st = document.getElementById('st');
-    try {
-        const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
+    <script>
+        const st = document.getElementById('st');
+        const debug = document.getElementById('debug');
 
-        const pieSocket = new PieSocketClass({
-            clusterId: 'free.blr2',
-            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
-        });
+        try {
+            // Corrección de constructor para diferentes versiones
+            const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
 
-        const channel = pieSocket.subscribe('clase-vibracion-2026');
+            const pieSocket = new PieSocketClass({
+                clusterId: 'free.blr2',
+                apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
+            });
 
-        channel.on('open', () => {
-            st.innerText = "CONECTADO";
-            st.style.color = "green";
-        });
+            const channel = pieSocket.subscribe('clase-vibracion-2026');
 
-        // ... resto del código igual ...
-    } catch (err) {
-        alert("Error técnico: " + err.message);
-    }
-</script>
+            channel.on('open', () => {
+                st.innerText = "CONECTADO";
+                st.style.color = "green";
+                debug.innerText = "Listo para recibir ataques.";
+            });
+
+            document.getElementById('btn').onclick = () => {
+                if (navigator.vibrate) {
+                    navigator.vibrate(100);
+                    alert("Hardware vinculado. No cierres esta pestaña.");
+                } else {
+                    alert("Tu navegador no soporta vibración.");
+                }
+            };
+
+            channel.on('message', (msg) => {
+                let data = msg.data;
+                if (typeof data === 'string') data = JSON.parse(data);
+                
+                if (data.action === 'vibrate') {
+                    if (navigator.vibrate) {
+                        navigator.vibrate([500, 200, 500]);
+                    }
+                }
+            });
+        } catch (err) {
+            st.innerText = "ERROR";
+            debug.innerText = err.message;
+        }
+    </script>
 </body>
 </html>
