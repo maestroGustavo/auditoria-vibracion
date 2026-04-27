@@ -1,48 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Nodo Receptor</title>
+    <title>Receptor</title>
     <script src="https://unpkg.com/piesocket-js@4"></script>
 </head>
 <body style="text-align:center; padding-top:50px; font-family:sans-serif;">
-    <h1>Estado: <span id="st" style="color:red">Desconectado</span></h1>
-    <button id="btn" style="padding:20px; font-size:1.5em; cursor:pointer;">1. PULSA</button>
-    <p id="debug" style="color:gray;"></p>
+    <h1>Estado: <span id="st" style="color:red">Buscando señal...</span></h1>
+    <button id="btn" style="padding:20px; font-size:1.5em;">1. Pulsa </button>
 
     <script>
         const st = document.getElementById('st');
-        const debug = document.getElementById('debug');
+        try {
+            const pieSocket = new PieSocket.default({
+                clusterId: 'free.blr2',
+                apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
+            });
 
-        // CONFIGURACIÓN (CON COMILLAS Y TRUE EN MINÚSCULA)
-        const pieSocket = new PieSocket.default({
-            clusterId: 'free.blr2',
-            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A',
-            notifySelf: true
-        });
+            const channel = pieSocket.subscribe('clase-vibracion-2026');
 
-        const channel = pieSocket.subscribe('clase-vibracion-2026');
+            channel.on('open', () => {
+                st.innerText = "CONECTADO";
+                st.style.color = "green";
+            });
 
-        channel.on('open', () => {
-            st.innerText = "Siente";
-            st.style.color = "orange";
-        });
+            document.getElementById('btn').onclick = () => {
+                alert("Nodo activado. ...");
+            };
 
-        document.getElementById('btn').onclick = () => {
-            st.innerText = "wait...";
-            st.style.color = "green";
-            if (navigator.vibrate) {
-                navigator.vibrate(100); // Vibración de prueba
-                debug.innerText = "Permiso concedido.";
-            }
-        };
-
-        channel.on('message', (msg) => {
-            // PieSocket v4 envía los datos en msg.data
-            const data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
-            if (data.action === 'vibrate' && navigator.vibrate) {
-                navigator.vibrate([500, 200, 500]);
-            }
-        });
+            channel.on('message', (msg) => {
+                // En v4, msg.data puede venir como objeto o string
+                let data = msg.data;
+                if (typeof data === 'string') data = JSON.parse(data);
+                
+                if (data.action === 'vibrate') {
+                    if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
+                }
+            });
+        } catch (err) {
+            alert("Error de código: " + err.message);
+        }
     </script>
 </body>
 </html>
