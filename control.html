@@ -10,22 +10,29 @@
         EJECUTAR VIBRACIÓN
     </button>
 
-    <script>
-        try {
-            const pieSocket = new PieSocket.default({
-                clusterId: 'free.blr2',
-                apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
-            });
+   <script>
+    try {
+        // Detectamos la forma correcta de llamar a la librería
+        const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
+        
+        const pieSocket = new PieSocketClass({
+            clusterId: 'free.blr2',
+            apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
+        });
 
-            const channel = pieSocket.subscribe('clase-vibracion-2026');
+        const channel = pieSocket.subscribe('clase-vibracion-2026');
 
-            document.getElementById('attack').onclick = () => {
-                channel.publish({ action: 'vibrate' });
-                alert("Ataque enviado al servidor");
-            };
-        } catch (err) {
-            alert("Error en atacante: " + err.message);
-        }
-    </script>
+        channel.on('open', () => {
+            console.log("Conexión establecida");
+        });
+
+        document.getElementById('attack').onclick = () => {
+            channel.publish({ action: 'vibrate' });
+            alert("¡Señal de vibración enviada!");
+        };
+    } catch (err) {
+        alert("Error técnico: " + err.message);
+    }
+</script>
 </body>
 </html>
