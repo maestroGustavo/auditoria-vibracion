@@ -33,7 +33,7 @@
                     console.log("Señal detectada");
                     if (navigator.vibrate) {
                         // Patrón de vibración: 800ms vibrar, 100ms pausa, 800ms vibrar
-                        navigator.vibrate([800, 100, 100]);
+                        navigator.vibrate([800, 100, 1000]);
                         debug.innerText = "¡UUUUUUY QUE ES ESO?!";
                         debug.style.color = "red";
                         
