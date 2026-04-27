@@ -17,41 +17,39 @@
         const debug = document.getElementById('debug');
 
         try {
-            // Corrección de constructor para diferentes versiones
             const PieSocketClass = PieSocket.default ? PieSocket.default : PieSocket;
-
             const pieSocket = new PieSocketClass({
                 clusterId: 'free.blr2',
                 apiKey: 'iKqhiMGj6f78LGjA620E1TUH3wznbapIrqHtoM1A'
             });
 
-            const channel = pieSocket.subscribe('clase-vibracion-2026');
-
-            channel.on('open', () => {
+            // Suscripción al canal
+            pieSocket.subscribe('clase-vibracion-2026').then(channel => {
                 st.innerText = "CONECTADO";
                 st.style.color = "green";
                 debug.innerText = "Listo para recibir ataques.";
+
+                // FORMA CORRECTA DE ESCUCHAR MENSAJES EN V4
+                channel.listen('message', (msg) => {
+                    console.log("Mensaje recibido:", msg);
+                    let data = msg.data;
+                    if (typeof data === 'string') data = JSON.parse(data);
+                    
+                    if (data.action === 'vibrate' && navigator.vibrate) {
+                        navigator.vibrate([500, 200, 500]);
+                        debug.innerText = "¡Vibrando!";
+                    }
+                });
             });
 
             document.getElementById('btn').onclick = () => {
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
-                    alert("Hardware vinculado. No cierres esta pestaña.");
+                    alert("Hardware vinculado. Esperando señal...");
                 } else {
                     alert("Tu navegador no soporta vibración.");
                 }
             };
-
-            channel.on('message', (msg) => {
-                let data = msg.data;
-                if (typeof data === 'string') data = JSON.parse(data);
-                
-                if (data.action === 'vibrate') {
-                    if (navigator.vibrate) {
-                        navigator.vibrate([500, 200, 500]);
-                    }
-                }
-            });
         } catch (err) {
             st.innerText = "ERROR";
             debug.innerText = err.message;
